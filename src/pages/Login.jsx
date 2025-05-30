@@ -5,13 +5,16 @@ import {
   MDBRow,
   MDBCol,
   MDBInput,
-  MDBIcon
+  MDBIcon,
+  MDBCardImage
 } from 'mdb-react-ui-kit';
 import './Login.css';
 import { auth, provider,Facebook } from '../firebase/config';
 import { signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
-
+import Header from './Header';
+import Lee from '../assets/lee.png';
+import Cau from '../assets/caulong.png';
 function Login() {
   const [activeForm, setActiveForm] = useState('phone');
   const [email, setEmail] = useState(''); // Chỉ dùng 1 state cho email
@@ -175,6 +178,7 @@ function Login() {
 
   return (
     <MDBContainer fluid className='p-0 login-container'>
+      <Header></Header>
       <MDBRow className='g-0 h-100'>
         {/* CỘT BÊN TRÁI: Logo và Text giới thiệu */}
         <MDBCol md='6' className='d-flex flex-column justify-content-center p-5 left-section'>
@@ -183,9 +187,10 @@ function Login() {
             <span className="logo-text">SK</span>
             <span className="logo-subtext">BE DIFFERENT</span>
           </div>
-          <h1 className="display-4 fw-bold text-white sign-in-adventure-text">
-            CAN THO SKYLINE <br /> BADMINTON!
-          </h1>
+          <div>
+         <MDBCardImage src={Cau} alt="Logo" position="top" style={{ width: '30px', height: '30px', objectFit: 'contain' }} className="animated-image"/>
+         <MDBCardImage src={Lee} alt="Lee" position="top" style={{ width: '100%', objectFit: 'contain' }} className="animated-imagecau" />
+        </div>
         </MDBCol>
 
         {/* CỘT BÊN PHẢI: Container chứa cả các form */}
@@ -256,9 +261,6 @@ function Login() {
                 </MDBBtn>
               </div>
 
-              <p className="text-center mt-3 text-white">
-                By registering you with our <a href="#!" className="text-white text-decoration-underline">Terms and Conditions</a>
-              </p>
             </div>
 
             {/* FORM ĐĂNG KÝ */}
@@ -293,7 +295,7 @@ function Login() {
                 />
               </div>
 
-              <div className="d-flex justify-content-center mb-4 w-100" >
+              <div className="d-flex justify-content-center mb-0 w-100" >
                 <MDBBtn
                   className='w-100 gradient-button-space mb-4'
                   size='lg'
@@ -322,7 +324,6 @@ function Login() {
                   color='none'
                   className='mx-2 social-button-space google-button-small'
                   style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)', color: 'white' }}
-                  onClick={LoginWithFacebook}
                 >
                   <MDBIcon fab icon='facebook' size="lg" className="me-2" /> Facebook
                 </MDBBtn>

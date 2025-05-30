@@ -66,7 +66,7 @@ html, body, #root {
 .right-section {
   background-color: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(20px);
-  padding: 60px 40px;
+  padding: 50px 10px;
   border-radius: 10px;
   display: flex;
   flex-direction: column;
@@ -229,7 +229,7 @@ html, body, #root {
   border-top: 1px solid rgba(255, 255, 255, 0.3);
   width: 100%;
   margin-top: 10px;
-  margin-bottom: 10px;
+  margin-bottom: 0px;
   max-width: 400px;
 }
 
@@ -254,8 +254,51 @@ html, body, #root {
     font-size: 1rem;
     padding: 10px 15px;
 }
+.image-container {
+ position: absolute;
+ bottom: 0;
+ left: 0;
+ width: 100%;
+ height: auto;
+ overflow: hidden; /* Ẩn phần ảnh bị tràn */
+}
 
+.animated-image {
+ width: 100%;
+ height: auto;
+ object-fit: contain;
+ animation: moveNgang 5s linear infinite alternate; /* Thời gian và kiểu chuyển động có thể điều chỉnh */
+}
+.animated-imagecau{
+ width: 100%;
+ height: auto;
+ object-fit: contain;
+ animation: moveHorizontal 8s linear infinite alternate; /* Thời gian và kiểu chuyển động có thể điều chỉnh */
+ margin-left: 40;
+}
+@keyframes moveNgang {
+ 0% {
+  transform: translateX(20%); /* Bắt đầu từ dưới cùng */
+ }
+ 50% {
+    transform: translateX(100%); /* Di chuyển sang phải 10% chiều rộng của ảnh (hoặc container) */
+  }
+ 100% {
+  transform: translateX(0%); /* Di chuyển lên trên */
+ }
 
+}
+@keyframes moveHorizontal {
+  0% {
+    transform: translateX(0%); /* Bắt đầu từ vị trí ban đầu (mép trái của container) */
+  }
+  50% {
+    transform: translateX(10%); /* Di chuyển sang phải 10% chiều rộng của ảnh (hoặc container) */
+  }
+  100% {
+    transform: translateX(0%); /* Quay về vị trí ban đầu */
+  }
+}
 /* Responsive adjustments */
 @media (max-width: 991.98px) {
   .left-section {
@@ -269,13 +312,27 @@ html, body, #root {
     border-radius: 0 !important;
     background-color: rgba(0, 0, 0, 0.6);
   }
+.form-carousel {
+  display: flex;
+  width: 95%;
+  height: 100%;
+  transition: transform 0.5s ease-in-out;
+  position: absolute;
+  top: 0;
+  left: 0;
+  align-items: center;
+  justify-content: space-around;
+}
 
+.form-carousel.slide-left-1 {
+  transform: translateX(-100%);
+}
   /* Trên mobile, các form vẫn chiếm 100% chiều rộng */
   .form-carousel,
   .form-content {
       width: 100% !important;
       max-width: none !important;
-      padding: 0 10px; /* Điều chỉnh padding cho mobile */
+      padding: 0 0px; /* Điều chỉnh padding cho mobile */
   }
   .form-carousel {
       position: relative; /* Trở lại relative trên mobile để không bị đè */
@@ -283,17 +340,17 @@ html, body, #root {
 
   /* Điều chỉnh lại input-wrapper trên mobile nếu cần */
   .input-wrapper {
-  width: 100%; /* Đảm bảo nó chiếm đủ 100% của parent */
+  width: 90%; /* Đảm bảo nó chiếm đủ 100% của parent */
   max-width: 450px; /* Tăng max-width để input rộng hơn */
   margin-left: 0;
   margin-right: 0;
-  padding: 0 10px; /* Thêm padding ngang cho wrapper nếu muốn input lùi vào chút */
+  padding: 0 0px; /* Thêm padding ngang cho wrapper nếu muốn input lùi vào chút */
   box-sizing: border-box; /* Đảm bảo padding không làm tăng width vượt quá */
 }
 
   /* Điều chỉnh lại nút gradient trên mobile */
   .gradient-button-space {
-      max-width: 100%;
+      max-width: 80%;
   }
 
   .right-section .form-content h1,
@@ -309,9 +366,9 @@ html, body, #root {
   .social-button-space {
       margin-bottom: 10px;
       margin-right: 0 !important;
-      width: 100% !important;
+      width: 80% !important;
   }
   .google-button-small {
-      width: 100% !important;
+      width: 80% !important;
   }
 }
