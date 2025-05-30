@@ -2,7 +2,7 @@
 .home-container {
     height: 100vh;
     width: 100vw;
-    background: linear-gradient(to right, #1a0033, #330066, #4b0082); /* Your specified gradient */
+    background: linear-gradient(to right, #292E49, #536976, #4b0082); /* Your specified gradient */
     position: relative;
     overflow: hidden; /* Ensures no scrollbars if content overflows */
     display: flex; /* Use flexbox for overall layout */
@@ -27,8 +27,8 @@
 
 .navbar .nav-link:hover,
 .navbar .nav-link.active {
-    color: #8b4bcb !important; /* Lighter purple on hover/active */
-    text-shadow: 0 0 8px rgba(255, 255, 255, 0.7); /* Subtle glow on hover */
+    color: #b7acc2 !important; /* Lighter purple on hover/active */
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.2); /* Subtle glow on hover */
 }
 
 /* Adjust padding for MDBNavbarToggler icon if needed */
@@ -41,7 +41,7 @@
 /* Styles for MDBInput (from GitHub header design) */
 /* Style cho nút Sign up (từ thiết kế GitHub) */
 .sign-up-button {
-border-left: 1px solid rgba(255, 255, 255, 0.3); /* Thêm đường kẻ */
+border-left: 1px solid rgba(255, 255, 255, 0.9); /* Thêm đường kẻ */
     padding-left: 15px !important; /* Tăng padding bên trái để đường kẻ không quá sát chữ */
     margin-left: 10px; /* Tạo khoảng cách giữa nút "Sign in" và đường kẻ */
 }
@@ -59,7 +59,7 @@ border-left: 1px solid rgba(255, 255, 255, 0.3); /* Thêm đường kẻ */
 /* Main Content Row Adjustments */
 .main-content-row {
     flex-grow: 1;
-    padding-top: 70px;
+    padding-top: 20x;
     overflow-y: auto;
 }
 
@@ -82,7 +82,7 @@ border-left: 1px solid rgba(255, 255, 255, 0.3); /* Thêm đường kẻ */
 }
 
 .sign-in-adventure-text {
-    text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
 }
 
 /* Right Section - Carousel Container */

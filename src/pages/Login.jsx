@@ -8,99 +8,174 @@ import {
   MDBIcon
 } from 'mdb-react-ui-kit';
 import './Login.css';
+import { auth, provider,Facebook } from '../firebase/config';
+import { signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
   const [activeForm, setActiveForm] = useState('phone');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [otp, setOtp] = useState(new Array(6).fill(''));
+  const [email, setEmail] = useState(''); // Chỉ dùng 1 state cho email
+  const [password, setPassword] = useState(''); // Chỉ dùng 1 state cho password
+  const navigate = useNavigate();
+  const otpInputRefs = useRef([]); // Có thể xóa nếu không sử dụng
+  const LoginWithFacebook = async () => {
+    try {
+      const result = await signInWithPopup(auth, Facebook);
+      const user = result.user;
+      const userEmail = user.email;
 
-  const otpInputRefs = useRef([]);
+      console.log("Đăng nhập thành công với Facebook:", user.email || user.displayName);
+      localStorage.setItem("email", user.email || user.uid); // Lưu email hoặc uid
+      navigate("/products");
+    } catch (error) {
+      console.error("Facebook login error:", error);
+      let errorMessage = "Đăng nhập Facebook thất bại. Vui lòng thử lại.";
+
+      switch (error.code) {
+        case 'auth/popup-closed-by-user':
+          errorMessage = 'Đăng nhập Facebook bị hủy bởi người dùng.';
+          break;
+        case 'auth/cancelled-popup-request':
+          errorMessage = 'Yêu cầu đăng nhập Facebook bị hủy (có thể do mở nhiều popup).';
+          break;
+        case 'auth/account-exists-with-different-credential':
+          errorMessage = 'Tài khoản này đã tồn tại với một phương thức đăng nhập khác (ví dụ: Google, Email/Mật khẩu).';
+          break;
+        case 'auth/auth-domain-config-error':
+          errorMessage = 'Lỗi cấu hình domain. Vui lòng kiểm tra lại cấu hình Firebase và Facebook App.';
+          break;
+        default:
+          errorMessage = `Đăng nhập Facebook thất bại: ${error.message}`;
+          break;
+      }
+      alert(errorMessage);
+    }
+  };
+
+  const LoginWithGoogle = async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      const userEmail = user.email;
+      const idToken = await user.getIdToken();
+
+      setEmail(userEmail); // Cập nhật state email
+      localStorage.setItem("email", userEmail);
+      navigate("/products");
+    } catch (error) {
+      console.error("Google login error:", error);
+      if (error.code === 'auth/popup-closed-by-user') {
+        alert('Đăng nhập Google bị hủy bởi người dùng.');
+      } else if (error.code === 'auth/cancelled-popup-request') {
+        alert('Yêu cầu đăng nhập Google bị hủy (có thể do mở nhiều popup).');
+      } else {
+        alert(`Đăng nhập Google thất bại: ${error.message || 'Vui lòng thử lại.'}`);
+      }
+    }
+  };
+
+  const handleEmailLogin = async () => {
+    try {
+      if (!email || !password) { // Sử dụng state 'email' và 'password'
+        alert("Vui lòng nhập đầy đủ Email và Mật khẩu.");
+        return;
+      }
+
+      const userCredential = await signInWithEmailAndPassword(auth, email, password); // Sử dụng state 'email'
+      const user = userCredential.user;
+
+      console.log("Đăng nhập thành công với email:", user.email);
+      localStorage.setItem("email", user.email);
+      navigate("/products");
+    } catch (error) {
+      console.error("Lỗi đăng nhập bằng Email/Mật khẩu:", error);
+      let errorMessage = "Đăng nhập thất bại. Vui lòng kiểm tra lại Email và Mật khẩu.";
+
+      switch (error.code) {
+        case 'auth/invalid-email':
+          errorMessage = 'Địa chỉ Email không hợp lệ.';
+          break;
+        case 'auth/user-disabled':
+          errorMessage = 'Tài khoản này đã bị vô hiệu hóa.';
+          break;
+        case 'auth/user-not-found':
+          errorMessage = 'Không tìm thấy tài khoản với Email này.';
+          break;
+        case 'auth/wrong-password':
+          errorMessage = 'Mật khẩu không đúng.';
+          break;
+        case 'auth/missing-password':
+          errorMessage = 'Vui lòng nhập mật khẩu.';
+          break;
+        default:
+          errorMessage = `Đăng nhập thất bại: ${error.message}`;
+          break;
+      }
+      alert(errorMessage);
+    }
+  };
+
+  const handleEmailRegister = async () => {
+    try {
+      if (!email || !password) { // Sử dụng state 'email' và 'password'
+        alert("Vui lòng nhập đầy đủ Email và Mật khẩu.");
+        return;
+      }
+
+      if (password.length < 6) { // Sử dụng state 'password'
+        alert("Mật khẩu phải có ít nhất 6 ký tự.");
+        return;
+      }
+
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password); // Sử dụng state 'email'
+      const user = userCredential.user;
+
+      console.log("Đăng ký thành công với email:", user.email);
+      alert("Đăng ký tài khoản thành công! Vui lòng đăng nhập.");
+      setEmail(''); // Xóa email và mật khẩu sau khi đăng ký
+      setPassword('');
+      setActiveForm('phone'); // Quay lại form đăng nhập
+    } catch (error) {
+      console.error("Lỗi đăng ký bằng Email/Mật khẩu:", error);
+      let errorMessage = "Đăng ký thất bại. Vui lòng thử lại.";
+
+      switch (error.code) {
+        case 'auth/email-already-in-use':
+          errorMessage = 'Địa chỉ Email này đã được sử dụng.';
+          break;
+        case 'auth/invalid-email':
+          errorMessage = 'Địa chỉ Email không hợp lệ.';
+          break;
+        case 'auth/weak-password':
+          errorMessage = 'Mật khẩu quá yếu. Vui lòng sử dụng mật khẩu mạnh hơn (ít nhất 6 ký tự).';
+          break;
+        default:
+          errorMessage = `Đăng ký thất bại: ${error.message}`;
+          break;
+      }
+      alert(errorMessage);
+    }
+  };
 
   const handleSignUpClick = () => {
-    setActiveForm('otp');
-    setTimeout(() => {
-      if (otpInputRefs.current[0]) {
-        otpInputRefs.current[0].focus();
-      }
-    }, 100);
+    setActiveForm('otp'); // Chuyển sang form đăng ký
+    setEmail(''); // Xóa email và mật khẩu khi chuyển form
+    setPassword('');
+    // Bỏ setTimeout và ref nếu không có trường hợp cần focus cụ thể
+    // if (otpInputRefs.current[0]) {
+    //     otpInputRefs.current[0].focus();
+    // }
   };
 
   const handleBackFromOtpClick = () => {
-    setActiveForm('phone');
-    setOtp(new Array(6).fill(''));
+    setActiveForm('phone'); // Chuyển về form đăng nhập
+    setEmail(''); // Xóa email và mật khẩu khi chuyển form
+    setPassword('');
   };
-
-  const handleOtpChange = (element, index) => {
-    if (isNaN(element.value)) return false;
-
-    const newOtp = [...otp];
-    newOtp[index] = element.value;
-    setOtp(newOtp);
-
-    if (element.value !== '' && index < 5) {
-      otpInputRefs.current[index + 1].focus();
-    }
-  };
-
-  const handleOtpKeyDown = (e, index) => {
-    if (e.key === "Backspace") {
-      if (otp[index] !== '') {
-        const newOtp = [...otp];
-        newOtp[index] = '';
-        setOtp(newOtp);
-      } else if (index > 0) {
-        otpInputRefs.current[index - 1].focus();
-      }
-      e.preventDefault();
-    } else if (e.key === "ArrowRight") {
-        if (index < 5) otpInputRefs.current[index + 1].focus();
-    } else if (e.key === "ArrowLeft") {
-        if (index > 0) otpInputRefs.current[index - 1].focus();
-    }
-    // Xử lý phím Enter riêng biệt (sẽ xử lý ở cấp độ form để đơn giản hơn)
-  };
-
-  const handleOtpPaste = (e) => {
-    e.preventDefault();
-    const pasteData = e.clipboardData.getData('text').trim();
-    if (pasteData.length === 6 && /^\d+$/.test(pasteData)) {
-      const newOtp = pasteData.split('');
-      setOtp(newOtp);
-      setTimeout(() => {
-        if (otpInputRefs.current[5]) {
-          otpInputRefs.current[5].focus();
-        }
-      }, 0);
-    }
-  };
-
-  // HÀM MỚI: Xử lý xác minh OTP (khi nhấn nút hoặc Enter)
-  const handleVerifyOtp = () => {
-    const fullOtp = otp.join(''); // Ghép các số OTP lại thành một chuỗi
-    if (fullOtp.length === 6) {
-      console.log("Mã OTP đã nhập:", fullOtp);
-      // Thực hiện logic xác minh OTP của bạn ở đây
-      alert("Xác minh OTP: " + fullOtp); // Ví dụ thông báo
-      // Sau khi xác minh, bạn có thể chuyển hướng hoặc thực hiện hành động tiếp theo
-    } else {
-      alert("Vui lòng nhập đủ 6 chữ số OTP.");
-    }
-  };
-
-  // HÀM MỚI: Xử lý Enter trên form OTP
-  const handleOtpFormKeyDown = (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault(); // Ngăn hành vi mặc định của Enter (ví dụ: submit form nếu có)
-      handleVerifyOtp(); // Gọi hàm xác minh OTP
-    }
-  };
-
 
   return (
     <MDBContainer fluid className='p-0 login-container'>
-
       <MDBRow className='g-0 h-100'>
-
         {/* CỘT BÊN TRÁI: Logo và Text giới thiệu */}
         <MDBCol md='6' className='d-flex flex-column justify-content-center p-5 left-section'>
           <div className="logo-section mb-4">
@@ -108,7 +183,6 @@ function Login() {
             <span className="logo-text">SK</span>
             <span className="logo-subtext">BE DIFFERENT</span>
           </div>
-
           <h1 className="display-4 fw-bold text-white sign-in-adventure-text">
             CAN THO SKYLINE <br /> BADMINTON!
           </h1>
@@ -118,32 +192,45 @@ function Login() {
         <MDBCol md='6' className='d-flex flex-column justify-content-center align-items-center p-5 right-section'>
           <div className={`form-carousel ${activeForm === 'otp' ? 'slide-left-1' : ''}`}>
 
-            {/* FORM ĐĂNG NHẬP BẰNG SỐ ĐIỆN THOẠI */}
+            {/* FORM ĐĂNG NHẬP */}
             <div className="form-content phone-form">
               <h1 className="display-3 fw-bold mb-4 text-white">SIGN IN</h1>
-              <h5 className="mb-4 text-white">Sign in with phone number</h5>
+              <h5 className="mb-4 text-white">Sign in with email</h5>
 
               <div className="d-flex align-items-center mb-4 input-wrapper">
-                <MDBIcon icon="phone" size="lg" className="me-3" style={{ color: 'white' }} />
+                <MDBIcon fas icon="envelope" size="lg" className="me-3" style={{ color: 'white' }} />
                 <MDBInput
                   wrapperClass='flex-grow-1'
-                  label='Your phone number'
-                  id='phoneNumberInput'
-                  type='tel'
+                  label='Your Email'
+                  id='loginEmailInput' // ID duy nhất
+                  type='email'
                   className='input-space-style'
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  value={email} // Sử dụng state 'email'
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
-
+              <div className="d-flex align-items-center mb-4 input-wrapper">
+                <MDBIcon fas icon="key" size="lg" className="me-3" style={{ color: 'white' }} />
+                <MDBInput
+                  wrapperClass='flex-grow-1'
+                  label='Password'
+                  id='loginPasswordInput' // ID duy nhất
+                  type='password' // Sửa thành type='password'
+                  className='input-space-style'
+                  value={password} // Sử dụng state 'password'
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
               <MDBBtn
                 className='w-100 gradient-button-space mb-4'
                 size='lg'
-                onClick={handleSignUpClick}
+                onClick={handleEmailLogin} // Gắn hàm đăng nhập
               >
-                Sign up
+                Sign In
               </MDBBtn>
-
+              <p className="text-center text-white">
+                Don't have an account? <a href="#!" className="text-white text-decoration-underline" onClick={handleSignUpClick}>Register now</a>
+              </p>
               <hr className="my-4 divider-space" />
 
               <p className="mb-4 text-white text-center">Or continue with</p>
@@ -154,8 +241,18 @@ function Login() {
                   color='none'
                   className='mx-2 social-button-space google-button-small'
                   style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)', color: 'white' }}
+                  onClick={LoginWithGoogle}
                 >
                   <MDBIcon fab icon='google' size="lg" className="me-2" /> Google
+                </MDBBtn>
+                <MDBBtn
+                  tag='a'
+                  color='none'
+                  className='mx-2 social-button-space google-button-small'
+                  style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)', color: 'white' }}
+                 onClick={LoginWithFacebook}
+                 >
+                  <MDBIcon fab icon='facebook' size="lg" className="me-2" /> Facebook
                 </MDBBtn>
               </div>
 
@@ -164,63 +261,75 @@ function Login() {
               </p>
             </div>
 
-            {/* FORM XÁC THỰC OTP 6 SỐ */}
-            {/* THÊM onKeyDown CHO FORM OTP */}
-            <div className="form-content otp-form" onKeyDown={handleOtpFormKeyDown}>
-              <h1 className="display-3 fw-bold mb-4 text-white">VERIFY PHONE</h1>
+            {/* FORM ĐĂNG KÝ */}
+            <div className="form-content otp-form" >
+              <h1 className="display-3 fw-bold mb-4 text-white">Register Now</h1>
               <p className="mb-4 text-white text-center">
-                Please enter the 6-digit code sent to your phone number: <br />
-                <strong>{phoneNumber}</strong>
+                Be Different  <br />
               </p>
 
-              <div className="otp-input-container d-flex justify-content-center mb-4">
-                {otp.map((data, index) => (
-                  <MDBInput
-                    key={index}
-                    id={`otpInput-${index}`}
-                    type='text'
-                    maxLength='1'
-                    className='otp-digit-input'
-                    value={data}
-                    onChange={e => handleOtpChange(e.target, index)}
-                    onKeyDown={e => handleOtpKeyDown(e, index)}
-                    onPaste={handleOtpPaste}
-                    ref={el => otpInputRefs.current[index] = el}
-                  />
-                ))}
+              <div className="d-flex align-items-center mb-4 input-wrapper">
+                <MDBIcon fas icon="envelope" size="lg" className="me-3" style={{ color: 'white' }} />
+                <MDBInput
+                  wrapperClass='flex-grow-1'
+                  label='Email' // Đổi label thành Email
+                  id='registerEmailInput' // ID duy nhất
+                  type='password'
+                  className='input-space-style'
+                  value={email} // Sử dụng state 'email'
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+              <div className="d-flex align-items-center mb-4 input-wrapper">
+                <MDBIcon fas icon="key" size="lg" className="me-3" style={{ color: 'white' }} />
+                <MDBInput
+                  wrapperClass='flex-grow-1'
+                  label='Password'
+                  id='registerPasswordInput' // ID duy nhất
+                  type='password' // Sửa thành type='password'
+                  className='input-space-style'
+                  value={password} // Sử dụng state 'password'
+                  onChange={(e) => setPassword(e.target.value)}
+                />
               </div>
 
-              <MDBBtn
-                className='w-100 gradient-button-space mb-4'
-                size='lg'
-                onClick={handleVerifyOtp} // Gán hàm xác minh cho nút
-              >
-                Verify Code
-              </MDBBtn>
-
+              <div className="d-flex justify-content-center mb-4 w-100" >
+                <MDBBtn
+                  className='w-100 gradient-button-space mb-4'
+                  size='lg'
+                  onClick={handleEmailRegister} // Gắn hàm đăng ký
+                >
+                  Sign up
+                </MDBBtn>
+              </div>
               <p className="text-center text-white">
-                Didn't receive the code? <a href="#!" className="text-white text-decoration-underline">Resend Code</a>
+                Already have an account? <a href="#!" className="text-white text-decoration-underline" onClick={handleBackFromOtpClick}>Sign In</a>
               </p>
-
               <hr className="my-4 divider-space" />
-
+              <p className="mb-4 text-white text-center">Or continue with</p>
               <div className="d-flex justify-content-center mb-4 w-100">
                 <MDBBtn
                   tag='a'
                   color='none'
                   className='mx-2 social-button-space google-button-small'
                   style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)', color: 'white' }}
-                  onClick={handleBackFromOtpClick}
+                  onClick={LoginWithGoogle}
                 >
-                  <MDBIcon icon='arrow-left' size="lg" className="me-2" /> Back to Phone
+                  <MDBIcon fab icon='google' size="lg" className="me-2" /> Google
+                </MDBBtn>
+                <MDBBtn
+                  tag='a'
+                  color='none'
+                  className='mx-2 social-button-space google-button-small'
+                  style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)', color: 'white' }}
+                  onClick={LoginWithFacebook}
+                >
+                  <MDBIcon fab icon='facebook' size="lg" className="me-2" /> Facebook
                 </MDBBtn>
               </div>
-
             </div> {/* End otp-form */}
-
           </div> {/* End form-carousel */}
         </MDBCol>
-
       </MDBRow>
     </MDBContainer>
   );

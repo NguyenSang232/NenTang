@@ -46,7 +46,7 @@ const HomePage = () => {
       <MDBNavbar expand='lg' className='custom-navbar'>
         <MDBContainer fluid className='d-flex align-items-center'>
           <MDBNavbarBrand href='#' className='me-4'>
-            <MDBIcon fab icon='github' size='2x' className='text-white' />
+            {/* <MDBIcon fab icon='github' size='2x' className='text-white' /> */}
           </MDBNavbarBrand>
 
           <MDBNavbarToggler

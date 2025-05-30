@@ -12,7 +12,7 @@ html, body, #root {
 .login-container {
   height: 100vh; /* Chiếm toàn bộ chiều cao viewport */
   width: 100vw; /* Chiếm toàn bộ chiều rộng viewport */
-  background: linear-gradient(to right, #1a0033, #330066, #4b0082); /* Gradient từ trái sang phải, các màu tím đậm/không gian */
+  background: linear-gradient(to right, #292E49, #536976, #4b0082); /* Gradient từ trái sang phải, các màu tím đậm/không gian */
   position: relative;
   overflow: hidden;
 }
@@ -128,51 +128,10 @@ html, body, #root {
 }
 
 /* Style cho container chứa các ô OTP */
-.otp-input-container {
-    display: flex;
-    justify-content: center;
-    gap: 15px; /* Tăng khoảng cách giữa các ô một chút để có "khung ảo" */
-    margin-bottom: 20px;
-    width: 100%;
-    max-width: 380px; /* Có thể điều chỉnh tổng chiều rộng các ô */
-}
-
-/* Style cho từng ô input OTP - ĐIỀU CHỈNH CHÍNH Ở ĐÂY */
-.otp-digit-input {
-    width: 50px; /* Chiều rộng của mỗi ô */
-    height: 60px; /* Chiều cao của mỗi ô */
-    text-align: center;
-    font-size: 2rem !important; /* Kích thước chữ to hơn */
-    font-weight: bold;
-    color: white !important;
-    padding: 0 !important;
-
-    /* Loại bỏ khung và nền mặc định */
-    background-color: transparent !important; /* Nền trong suốt */
-    border: none !important; /* Bỏ tất cả viền */
-    border-bottom: 2px solid rgba(255, 255, 255, 0.4); /* Thêm viền dưới mờ */
-    border-radius: 0 !important; /* Bỏ border-radius để có hình dạng vuông vắn hơn */
-    outline: none !important; /* Bỏ outline khi focus */
-    box-shadow: none !important; /* Bỏ box-shadow */
-    transition: border-color 0.2s ease-in-out, background-color 0.2s ease-in-out; /* Thêm transition cho viền và nền */
-    -moz-appearance: textfield; /* Loại bỏ mũi tên tăng giảm số trên Firefox */
-}
-/* Loại bỏ mũi tên tăng giảm số trên Chrome, Safari, Edge */
-.otp-digit-input::-webkit-outer-spin-button,
-.otp-digit-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-/* Style khi ô OTP được focus */
-.otp-digit-input:focus {
-  border-bottom: 2px solid white; /* Viền dưới trắng sáng khi focus */
-  background-color: rgba(255, 255, 255, 0.1); /* Nền mờ hơn khi focus */
-}
 .input-space-style {
     height: 45px; /* Chiều cao của mỗi ô */
-   font-size: 1.3rem !important; /* Kích thước chữ to hơn */
-    font-weight: bold;
+   font-size: 1.2rem !important; /* Kích thước chữ to hơn */
+    font-weight: 400;
     color: white !important;
     padding: 10 !important;
 
@@ -187,7 +146,7 @@ html, body, #root {
   height: auto !important;
   font-size: 1.1rem;
   position: relative;
-  z-index: 1;
+  z-index: 3;
 }
 
 /* ĐIỀU CHỈNH MÀU CHO PLACEHOLDER khi input rỗng */
@@ -253,7 +212,7 @@ html, body, #root {
 
 /* Nút Gradient (Sign up) */
 .gradient-button-space {
-  background: linear-gradient(to right, #8A2BE2, #4B0082) !important;
+  background: linear-gradient(to right, #55707f, #707fd4) !important;
   border: none !important;
   font-weight: bold;
   height: 45px;
@@ -262,14 +221,15 @@ html, body, #root {
   border-radius: 8px;
   font-size: 1.1rem;
   color: white !important;
+  margin-bottom: 0px;
 }
 
 /* Đường kẻ ngang */
 .divider-space {
   border-top: 1px solid rgba(255, 255, 255, 0.3);
   width: 100%;
-  margin-top: 30px;
-  margin-bottom: 30px;
+  margin-top: 10px;
+  margin-bottom: 10px;
   max-width: 400px;
 }
 
@@ -285,6 +245,7 @@ html, body, #root {
   font-size: 1rem;
   margin-right: 0 !important;
   width: auto;
+   background: linear-gradient(to right, #55707f, #707fd4) !important;
 }
 
 /* Class cho nút Google - ĐIỀU CHỈNH CHIỀU NGANG */
@@ -352,14 +313,5 @@ html, body, #root {
   }
   .google-button-small {
       width: 100% !important;
-  }
-  .otp-input-container {
-    max-width: 100%; /* Cho phép OTP container rộng hơn trên mobile */
-    gap: 8px; /* Giảm khoảng cách giữa các ô trên mobile */
-  }
-  .otp-digit-input {
-    width: 40px; /* Giảm chiều rộng của ô trên mobile */
-    height: 50px; /* Giảm chiều cao của ô trên mobile */
-    font-size: 1.5rem !important;
   }
 }
